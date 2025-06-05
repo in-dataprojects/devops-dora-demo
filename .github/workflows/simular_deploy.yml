@@ -2,7 +2,7 @@ name: Simular Deployments automáticos
 
 on:
   schedule:
-    - cron: '*/15 * * * *	'  # De 15 em 15 minutos
+    - cron: '*/15 * * * *'  # Todos os dias de 15 em 15 min
   workflow_dispatch:
 
 jobs:
@@ -12,14 +12,21 @@ jobs:
       - name: Checkout repositório
         uses: actions/checkout@v3
         with:
-          persist-credentials: true
-          token: ${{ secrets.GH_PAT }}
-          
-      - name: Gerar Tag e Release
+          token: ${{ secrets.GH_PAT }}  # token personalizado aqui
+
+      - name: Criar Tag
+        run: |
+          git config user.name "simulador-bot"
+          git config user.email "bot@simulador.com"
+          TAG_NAME="deploy-$(date +'%Y%m%d-%H%M')"
+          git tag $TAG_NAME
+          git push origin $TAG_NAME
+
+      - name: Gerar Release Automática
         uses: softprops/action-gh-release@v1
         with:
-          tag_name: "deploy-$(date +'%Y%m%d-%H%M')"
+          tag_name: ${{ steps.tag.outputs.tag }}
           name: "Deploy Automático em Produção $(date +'%Y-%m-%d %H:%M')"
           body: "Deploy automático simulado."
         env:
-          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+          GITHUB_TOKEN: ${{ secrets.GH_PAT }}  # token personalizado
