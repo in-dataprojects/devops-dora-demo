@@ -12,21 +12,26 @@ jobs:
       - name: Checkout repositório
         uses: actions/checkout@v3
         with:
-          token: ${{ secrets.GH_PAT }}  # token personalizado aqui
+          token: ${{ secrets.GH_PAT }}
 
-      - name: Criar Tag
+      - name: Configurar Git
         run: |
           git config user.name "simulador-bot"
           git config user.email "bot@simulador.com"
+
+      - name: Criar Tag
+        id: tag
+        run: |
           TAG_NAME="deploy-$(date +'%Y%m%d-%H%M')"
           git tag $TAG_NAME
           git push origin $TAG_NAME
+          echo "tag=$TAG_NAME" >> $GITHUB_OUTPUT
 
-      - name: Gerar Release Automática
+      - name: Criar Release
         uses: softprops/action-gh-release@v1
         with:
           tag_name: ${{ steps.tag.outputs.tag }}
-          name: "Deploy Automático em Produção $(date +'%Y-%m-%d %H:%M')"
-          body: "Deploy automático simulado."
+          name: "Deploy Automático em Produção ${{ steps.tag.outputs.tag }}"
+          body: "Deploy automático simulado pelo GitHub Actions."
         env:
-          GITHUB_TOKEN: ${{ secrets.GH_PAT }}  # token personalizado
+          GITHUB_TOKEN: ${{ secrets.GH_PAT }}
