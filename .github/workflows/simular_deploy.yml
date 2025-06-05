@@ -1,0 +1,22 @@
+name: Simular Deployments automáticos
+
+on:
+  schedule:
+    - cron: '*/15 * * * *	'  # De 15 em 15 minutos
+  workflow_dispatch:
+
+jobs:
+  deploy:
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout repositório
+        uses: actions/checkout@v3
+
+      - name: Gerar Tag e Release
+        uses: softprops/action-gh-release@v1
+        with:
+          tag_name: "deploy-$(date +'%Y%m%d-%H%M')"
+          name: "Deploy Automático em Produção $(date +'%Y-%m-%d %H:%M')"
+          body: "Deploy automático simulado."
+        env:
+          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
