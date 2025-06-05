@@ -1,0 +1,24 @@
+name: Simular Commits periódicos
+
+on:
+  schedule:
+    - cron: '*/15 * * * *'  # todo dia às 8:00 AM
+  workflow_dispatch:
+
+jobs:
+  commit:
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout repositório
+        uses: actions/checkout@v3
+        with:
+          persist-credentials: true
+
+      - name: Criar commit simulado
+        run: |
+          echo "Commit simulado em $(date)" >> simulacao.txt
+          git config user.name "simulador-bot"
+          git config user.email "bot@simulador.com"
+          git add simulacao.txt
+          git commit -m "feat: commit simulado automático em $(date)"
+          git push origin main
