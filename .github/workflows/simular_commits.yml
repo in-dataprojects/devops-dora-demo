@@ -13,12 +13,12 @@ jobs:
         uses: actions/checkout@v3
         with:
           persist-credentials: true
-
+          token: ${{ secrets.GH_PAT }}  # seu token personalizado aqui
       - name: Criar commit simulado
         run: |
           echo "Commit simulado em $(date)" >> simulacao.txt
-          git config user.name "simulador-bot"
-          git config user.email "bot@simulador.com"
+          git config user.name "simulador-in"
+          git config user.email "simulador@in1.com"
           git add simulacao.txt
           git commit -m "feat: commit simulado automático em $(date)"
           git push origin main
