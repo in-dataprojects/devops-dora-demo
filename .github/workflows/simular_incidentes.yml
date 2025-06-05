@@ -12,6 +12,8 @@ jobs:
       - name: Criar incidente simulado
         uses: actions/github-script@v6
         with:
+          persist-credentials: true
+          token: ${{ secrets.GH_PAT }}  # seu token personalizado aqui
           script: |
             const issue = await github.rest.issues.create({
               owner: context.repo.owner,
