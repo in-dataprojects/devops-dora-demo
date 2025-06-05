@@ -10,30 +10,30 @@ jobs:
     runs-on: ubuntu-latest
     steps:
       - name: Criar incidente simulado
-        uses: actions/github-script@v6
-        with:
-          persist-credentials: true
-          token: ${{ secrets.GH_PAT }}  # seu token personalizado aqui
-          script: |
-            const issue = await github.rest.issues.create({
-              owner: context.repo.owner,
-              repo: context.repo.repo,
-              title: '🚨 Incidente simulado em Produção',
-              body: 'Falha simulada gerada automaticamente pelo GitHub Actions.',
-              labels: ['incident', 'production']
-            });
-            
-            console.log(`Incidente criado: ${issue.data.number}`);
+        env:
+          GH_PAT: ${{ secrets.GH_PAT }}
+          REPO: ${{ github.repository }}
+        run: |
+          echo "Criando issue..."
+          CREATED_ISSUE=$(curl -s -X POST https://api.github.com/repos/$REPO/issues \
+            -H "Authorization: token $GH_PAT" \
+            -H "Accept: application/vnd.github+json" \
+            -d '{
+              "title": "🚨 Incidente simulado em Produção",
+              "body": "Falha simulada gerada automaticamente pelo GitHub Actions.",
+              "labels": ["incident", "production"]
+            }')
 
-            // Fecha automaticamente a issue após 1 hora (simulando restauração rápida)
-            const wait = ms => new Promise(resolve => setTimeout(resolve, ms));
-            await wait(3600000); // espera 1 hora (3600s)
+          ISSUE_NUMBER=$(echo "$CREATED_ISSUE" | jq '.number')
+          echo "Issue criada: #$ISSUE_NUMBER"
 
-            await github.rest.issues.update({
-              owner: context.repo.owner,
-              repo: context.repo.repo,
-              issue_number: issue.data.number,
-              state: 'closed'
-            });
-            
-            console.log(`Incidente resolvido: ${issue.data.number}`);
+          echo "Aguardando 1 minuto antes de fechar (simulando restauração)..."
+          sleep 60
+
+          echo "Fechando issue #$ISSUE_NUMBER..."
+          curl -s -X PATCH https://api.github.com/repos/$REPO/issues/$ISSUE_NUMBER \
+            -H "Authorization: token $GH_PAT" \
+            -H "Accept: application/vnd.github+json" \
+            -d '{"state": "closed"}'
+
+          echo "Issue fechada com sucesso."
