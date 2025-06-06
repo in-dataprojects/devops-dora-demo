@@ -2,7 +2,7 @@ name: Simular incidentes (MTTR e Failure Rate)
 
 on:
   schedule:
-    - cron: '*/15 * * * *'  # De 15 em 15 minutos
+    - cron: '0 * * * *'  #de hora em hora  #'*/15 * * * *'  # De 15 em 15 minutos
   workflow_dispatch:
 
 jobs:
