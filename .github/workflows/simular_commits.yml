@@ -2,7 +2,7 @@ name: Simular Commits periódicos
 
 on:
   schedule:
-    - cron: '*/15 * * * *'  # De 15 em 15 minutos '0 * * * *'  # Executa a cada hora
+    - cron:  '0 * * * *'  # Executa a cada hora '*/15 * * * *'  # De 15 em 15 minutos
   workflow_dispatch:
 
 jobs:
