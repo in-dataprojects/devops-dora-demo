@@ -8,16 +8,22 @@ on:
 jobs:
   commit:
     runs-on: ubuntu-latest
+    env:
+      GH_PAT: ${{ secrets.GH_PAT }}
+      REPO: ${{ github.repository }}
+      GIT_TERMINAL_PROMPT: 0
+      GIT_ASKPASS: /bin/echo
+
     steps:
-      - name: Clonar repositório com token manualmente
-        env:
-          GH_PAT: ${{ secrets.GH_PAT }}
+      - name: Clonar repositório manualmente com autenticação
         run: |
-          git clone https://x-access-token:${GH_PAT}@github.com/${{ github.repository }}.git repo
-          cd repo
+          git clone https://x-access-token:${GH_PAT}@github.com/${REPO}.git
+          cd $(basename "$REPO")
+
           git config user.name "simulador-bot"
           git config user.email "bot@simulador.com"
+
           echo "Commit simulado em $(date)" >> simulacao.txt
           git add simulacao.txt
           git commit -m "feat: commit automático em $(date)"
-          git push origin main
+          git push origin HEAD:main
