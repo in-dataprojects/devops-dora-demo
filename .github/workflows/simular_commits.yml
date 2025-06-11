@@ -2,29 +2,22 @@ name: Simular Commits periódicos
 
 on:
   schedule:
-    - cron: '0 * * * *'  # Executa a cada hora cheia
+    - cron: '0 * * * *'  # Executa a cada hora
   workflow_dispatch:
 
 jobs:
   commit:
     runs-on: ubuntu-latest
     steps:
-      - name: Checkout repositório
-        uses: actions/checkout@v3
-        with:
-          token: ${{ secrets.GH_PAT }}
-
-      - name: Configurar Git e simular commit
+      - name: Clonar repositório com token manualmente
         env:
           GH_PAT: ${{ secrets.GH_PAT }}
         run: |
+          git clone https://x-access-token:${GH_PAT}@github.com/${{ github.repository }}.git repo
+          cd repo
           git config user.name "simulador-bot"
           git config user.email "bot@simulador.com"
-
           echo "Commit simulado em $(date)" >> simulacao.txt
           git add simulacao.txt
-          git commit -m "feat: commit simulado automático em $(date)"
-
-          # Autenticar e fazer push usando o token GH_PAT
-          git remote set-url origin https://x-access-token:${GH_PAT}@github.com/${{ github.repository }}.git
-          git push origin HEAD:main
+          git commit -m "feat: commit automático em $(date)"
+          git push origin main
