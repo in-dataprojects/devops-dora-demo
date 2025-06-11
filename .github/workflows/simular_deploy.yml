@@ -2,7 +2,7 @@ name: Simular Deployments automáticos
 
 on:
   schedule:
-    - cron: '*/15 * * * *'  # Todos os dias de 15 em 15 min
+    - cron: '0 * * * *'  # Executa a cada hora cheia' #*/15 * * * *'  # Todos os dias de 15 em 15 min
   workflow_dispatch:
 
 jobs:
